@@ -6,15 +6,17 @@
 #
 ################################################################################
 
-import InfoPage
-import InfoDisplay
+from ..lib.InfoPage import InfoPage
+from ..lib.InfoDisplay import InfoDisplay
 
 
 class WiFiPage(InfoPage):
-    def display(self):
+    def render(self):
         r = self.runCmd("/usr/bin/nmcli radio wifi")
         #### FIXME
         print(f"RESULT: {r}")
+        #### self.font = ImageFont.truetype(<path/font.ttf>, 16)
+        self.draw.text((0, 0), r, font=font, fill=255)
 
 pageFuncs = (WiFiPage)
 
