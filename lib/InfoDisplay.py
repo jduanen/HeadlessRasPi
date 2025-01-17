@@ -11,9 +11,6 @@ import digitalio
 import logging
 import sys
 import time
-from PIL import Image, ImageDraw, ImageFont
-
-import adafruit_ssd1306
 
 
 DEF_DELAY_SEC = 1.5  # 1500msec
@@ -30,19 +27,7 @@ class InfoDisplay():
         self.pageFuncs = pageFuncs
         self.currentPage = 0
 
-        #### TODO make this support other displays, and at different I2C addresses
-        self.i2c = board.I2C()
-        self.oled = adafruit_ssd1306.SSD1306_I2C(128, 64, self.i2c)
-
-        # clear display then blink it the given number of times at startup
-        oled.fill(0)
-        oled.show()
-        for i in range(blinks):
-            oled.fill(i % 2)
-            oled.show()
-
     def displayCurrentPage():
-        #### FIXME
         self.pageFuncs(self.currentPage).display()
 
     def displayPage(self, pageNum):
