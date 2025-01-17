@@ -29,8 +29,14 @@ WiFi Provisioning and Status Display for Headless Raspberry Pi
     * Interface Options -> I2C: enable
   - reboot RasPi
 * install libraries
-  - sudo pip3 install adafruit-circuitpython-ssd1306
-  - sudo pip3 install pillow
+  - sudo apt install virtualenvwrapper python3-virtualenvwrapper
+  - echo "export WORKON_HOME=$HOME/.virtualenvs" >> ~/.bashrc
+    echo "export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python" >> ~/.bashrc
+    echo "source /usr/share/virtualenvwrapper/virtualenvwrapper.sh" >> ~/.bashrc
+  - mkvirtualenv --python=`which python3` --prompt=wifi WIFI
+  - workon WIFI
+  - pip3 install adafruit-circuitpython-ssd1306
+  - pip3 install pillow
 
 # Use
 
@@ -38,6 +44,7 @@ WiFi Provisioning and Status Display for Headless Raspberry Pi
   - ?
 * Display Text
   - ?
+  - using the default font: six lines (with one or two lines of spacing) and 20 characters
 * Flush WiFi Credentials
   - short pins 39 and 40 on the GPIO header for three or more seconds
     * bottom two pins, nearest to RJ45 connector
