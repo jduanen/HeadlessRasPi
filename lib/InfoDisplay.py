@@ -31,6 +31,9 @@ class InfoDisplay():
         self.pageFuncs = pageFuncs
         self.currentPage = 0
 
+    def clear(self):
+        self.pageFuncs[self.currentPage].clear()
+
     def displayCurrentPage(self):
         self.pageFuncs[self.currentPage].display()
 
