@@ -6,11 +6,15 @@
 #
 ################################################################################
 
-import board
-import digitalio
 import logging
+import os
 import sys
 import time
+
+parent_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(parent_dir)
+
+from lib.InfoPage import InfoPage
 
 
 DEF_DELAY_SEC = 1.5  # 1500msec
@@ -27,8 +31,8 @@ class InfoDisplay():
         self.pageFuncs = pageFuncs
         self.currentPage = 0
 
-    def displayCurrentPage():
-        self.pageFuncs(self.currentPage).display()
+    def displayCurrentPage(self):
+        self.pageFuncs[self.currentPage].display()
 
     def displayPage(self, pageNum):
         if (pageNum < 0) or (pageNum >= len(self.pageFuncs)):
@@ -41,7 +45,7 @@ class InfoDisplay():
         self.currentPage += 1
         self.displayCurrentPage()
 
-    def displayPages(delay=DEF_DELAY_SEC):
+    def displayPages(self, delay=DEF_DELAY_SEC):
         for num in range(len(self.pageFuncs)):
             logging.info(f"Display page #{num}")
             self.displayPage(num)
