@@ -16,6 +16,9 @@ from lib.InfoPage import InfoPage
 from lib.InfoDisplay import InfoDisplay
 
 
+DWELL_SECS = 5
+
+
 class WiFiPage(InfoPage):
     def render(self):
         r = self.runCmd("/usr/bin/nmcli radio wifi")
@@ -29,3 +32,6 @@ pageFuncs = (WiFiPage(), )
 display = InfoDisplay(pageFuncs)
 
 display.displayPages(2)
+
+time.sleep(DWELL_SECS)
+display.clear()
