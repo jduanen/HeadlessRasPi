@@ -28,12 +28,11 @@ class InfoPage(ABC):
         self.img = Image.new("1", (self.oled.width, self.oled.height))
         self.draw = ImageDraw.Draw(self.img)
 
-        # clear display then blink it the given number of times at startup
-        self.oled.fill(0)
-        self.oled.show()
+        # blink the display a given number of times and clear display
         for i in range(blinks * 2):
             self.oled.fill(i % 2)
             self.oled.show()
+        self.clear()
 
     def runCmd(self, cmd):
         try:
@@ -51,4 +50,8 @@ class InfoPage(ABC):
     def display(self):
         self.render()
         self.oled.image(self.img)
+        self.oled.show()
+
+    def clear(self):
+        self.oled.fill(0)
         self.oled.show()
