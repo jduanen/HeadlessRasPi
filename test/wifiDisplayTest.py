@@ -6,8 +6,14 @@
 #
 ################################################################################
 
-from ..lib.InfoPage import InfoPage
-from ..lib.InfoDisplay import InfoDisplay
+import sys
+import os
+
+parent_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(parent_dir)
+
+from lib.InfoPage import InfoPage
+from lib.InfoDisplay import InfoDisplay
 
 
 class WiFiPage(InfoPage):
@@ -16,9 +22,9 @@ class WiFiPage(InfoPage):
         #### FIXME
         print(f"RESULT: {r}")
         #### self.font = ImageFont.truetype(<path/font.ttf>, 16)
-        self.draw.text((0, 0), r, font=font, fill=255)
+        self.draw.text((0, 0), r, font=self.font, fill=255)
 
-pageFuncs = (WiFiPage)
+pageFuncs = (WiFiPage(), )
 
 display = InfoDisplay(pageFuncs)
 
