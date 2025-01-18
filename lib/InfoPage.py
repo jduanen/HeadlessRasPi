@@ -6,6 +6,8 @@
 #
 ################################################################################
 
+import board
+import digitalio
 import logging
 import subprocess
 import time
@@ -16,20 +18,20 @@ import adafruit_ssd1306
 
 
 class InfoPage(ABC):
-    def __init__(self):
+    def __init__(self, blinks=0):
         #### TODO make this support other displays, and at different I2C addresses
         self.i2c = board.I2C()
         self.oled = adafruit_ssd1306.SSD1306_I2C(128, 64, self.i2c)
 
         self.font = ImageFont.load_default()
         #### TODO figure out if I should make the mode parameter variable
-        self.img = Image.new("1", (oled.width, oled.height))
+        self.img = Image.new("1", (self.oled.width, self.oled.height))
         self.draw = ImageDraw.Draw(self.img)
 
         # clear display then blink it the given number of times at startup
         self.oled.fill(0)
         self.oled.show()
-        for i in range(blinks):
+        for i in range(blinks * 2):
             self.oled.fill(i % 2)
             self.oled.show()
 
