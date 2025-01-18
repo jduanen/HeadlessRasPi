@@ -10,7 +10,6 @@ import board
 import digitalio
 import logging
 import subprocess
-import time
 from PIL import Image, ImageDraw, ImageFont
 from abc import ABC, abstractmethod
 
@@ -18,7 +17,7 @@ import adafruit_ssd1306
 
 
 class InfoPage(ABC):
-    def __init__(self, blinks=0):
+    def __init__(self):
         #### TODO make this support other displays, and at different I2C addresses
         self.i2c = board.I2C()
         self.oled = adafruit_ssd1306.SSD1306_I2C(128, 64, self.i2c)
@@ -28,10 +27,6 @@ class InfoPage(ABC):
         self.img = Image.new("1", (self.oled.width, self.oled.height))
         self.draw = ImageDraw.Draw(self.img)
 
-        # blink the display a given number of times and clear display
-        for i in range(blinks * 2):
-            self.oled.fill(i % 2)
-            self.oled.show()
         self.clear()
 
     def runCmd(self, cmd):

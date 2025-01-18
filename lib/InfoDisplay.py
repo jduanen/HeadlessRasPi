@@ -11,6 +11,7 @@ import os
 import sys
 import time
 
+#### move this to __init__.py
 parent_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(parent_dir)
 
@@ -21,7 +22,7 @@ DEF_DELAY_SEC = 1.5  # 1500msec
 
 
 class InfoDisplay():
-    def __init__(self, pageFuncs, blinks=0):
+    def __init__(self, pageFuncs):
         if not isinstance(pageFuncs, (list, tuple)) or (len(pageFuncs) < 1):
             logging.error("Must provide one or more page functions")
             raise ValueError("InfoPage list error")
@@ -53,4 +54,3 @@ class InfoDisplay():
             logging.info(f"Display page #{num}")
             self.displayPage(num)
             time.sleep(delay)
-
