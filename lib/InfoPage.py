@@ -35,6 +35,7 @@ class InfoPage(ABC):
         self.i2c = board.I2C()
         self.oled = adafruit_ssd1306.SSD1306_I2C(128, 64, self.i2c)
         self.font = ImageFont.load_default()
+        #### self.font = ImageFont.truetype(<path/font.ttf>, 16)
         #### TODO figure out if I should make the mode parameter variable
         self.img = Image.new("1", (self.oled.width, self.oled.height))
         self.draw = ImageDraw.Draw(self.img)
@@ -54,7 +55,6 @@ class InfoPage(ABC):
         pass
 
     def display(self):
-        #self.oled.fill(0)
         dwell = self.render()
         logging.debug(f"display: {dwell}")
         self.oled.image(self.img)
@@ -63,12 +63,14 @@ class InfoPage(ABC):
         self.clear()
 
     def displaySubpage(self, dwell):
-        self.oled.fill(0)
         logging.debug(f"displaySubpage: {dwell}")
         self.oled.image(self.img)
         self.oled.show()
         time.sleep(dwell)
+        self.clear()
 
     def clear(self):
+        print("CLEAR")
+        self.draw.rectangle((0, 0, self.img.width, self.img.height), fill=0)
         self.oled.fill(0)
         self.oled.show()
