@@ -19,7 +19,7 @@ from lib.InfoPage import InfoPage
 from lib.InfoDisplay import InfoDisplay
 
 
-LOG_LEVEL = "DEBUG"
+LOG_LEVEL = "WARNING"  # "DEBUG"
 
 WIFI_PAGE_DWELL = 1 #5.0
 CONN_PAGE_DWELL = 10.0
