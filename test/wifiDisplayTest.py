@@ -21,10 +21,10 @@ from lib.InfoDisplay import InfoDisplay
 
 LOG_LEVEL = "DEBUG"
 
-WIFI_PAGE_DWELL = 5.0
-CONN_PAGE_DWELL = 5.0
-CPU_PAGE_DWELL = 3.0
-MEMORY_PAGE_DWELL = 5.0
+WIFI_PAGE_DWELL = 1 #5.0
+CONN_PAGE_DWELL = 10.0
+CPU_PAGE_DWELL = 1 # 3.0
+MEMORY_PAGE_DWELL = 1 # 5.0
 
 MAX_RENDER_RETRIES = 5
 ROW_OFFSET = 11
@@ -114,15 +114,23 @@ class ConnectionPage(InfoPage):
         if info['IN-USE'] != '*':
             self.draw.text((0, row), "WiFi not in use", font=self.font, fill=255)
             row += ROW_OFFSET
+            self.draw.text((0, row), f"SSID: {info['SSID']}", font=self.font, fill=255)
+            row += ROW_OFFSET
+            self.draw.text((0, row), f"Mode: {info['MODE']};  Chan: {info['CHAN']}", font=self.font, fill=255)
+            row += ROW_OFFSET
+            self.draw.text((0, row), f"Signal: {info['SIGNAL']}%", font=self.font, fill=255)
+            row += ROW_OFFSET
+            self.draw.text((0, row), f"Bars: {info['BARS'].count('_')}", font=self.font, fill=255)
+            row += ROW_OFFSET
             return 1.0
         else:
             self.draw.text((0, row), f"SSID: {info['SSID']}", font=self.font, fill=255)
             row += ROW_OFFSET
             self.draw.text((0, row), f"Mode: {info['MODE']};  Chan: {info['CHAN']}", font=self.font, fill=255)
             row += ROW_OFFSET
-            self.draw.text((0, row), f"Rate: {info['RATE']}", font=self.font, fill=255)
+            self.draw.text((0, row), f"Rate: {info['RATE']};  {info['SIGNAL']}%", font=self.font, fill=255)
             row += ROW_OFFSET
-            self.draw.text((0, row), f"Signal: {info['SIGNAL']};  {info['BARS']}", font=self.font, fill=255)
+            self.draw.text((0, row), f"RSSI: {info['RSSI']};  Bars: {info['BARS'].count('_')}", font=self.font, fill=255)
             row += ROW_OFFSET
             self.draw.text((0, row), f"Security: {info['SECURITY']}", font=self.font, fill=255)
             row += ROW_OFFSET
@@ -130,6 +138,18 @@ class ConnectionPage(InfoPage):
     
     def render(self):
         logging.debug(f"{self.__class__.__name__} start")
+        r = self.runCmd("cat /proc/net/wireless")
+        lines = r.splitlines()
+        rssis = {}
+        for indx, line in enumerate(lines):
+            if indx in (0, 1):
+                continue
+            parts = line.split()
+            rssis[parts[0][:-1]] = parts[3][:-1]
+        if len(rssis) > 1:
+            logging.warning(f"Unexpected RSSI values: {rssis}")
+        print(f">>> {rssis}")
+
         r = self.runCmd("nmcli -t -m m device wifi list --rescan yes")
         lines = r.splitlines()
         groups = [lines[i:i + 9] for i in range(0, len(lines), 9)]
@@ -193,5 +213,3 @@ if __name__ == "__main__":
     display = InfoDisplay(pageFuncs)
     display.displayPages()
     display.clear()
-
-    #### self.font = ImageFont.truetype(<path/font.ttf>, 16)
