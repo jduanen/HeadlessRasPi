@@ -10,6 +10,7 @@ import board
 import digitalio
 import logging
 import subprocess
+import time
 from PIL import Image, ImageDraw, ImageFont
 from abc import ABC, abstractmethod
 
@@ -17,6 +18,18 @@ import adafruit_ssd1306
 
 
 class InfoPage(ABC):
+    @staticmethod
+    def _parseOutput(outStr, sepChar):
+        #### TODO make sure sepChar is a char
+        outDict = {}
+        for indx, line in enumerate(outStr.splitlines()):
+            if sepChar in line:
+                k, v = line.split(sepChar)
+                outDict[k.strip()] = v.strip()
+            else:
+                outDict[f"L{indx}"] = line
+        return outDict
+
     def __init__(self):
         #### TODO make this support other displays, and at different I2C addresses
         self.i2c = board.I2C()
@@ -43,7 +56,21 @@ class InfoPage(ABC):
         pass
 
     def display(self):
-        self.render()
+        while True:
+            self.oled.fill(0)
+            dwell = self.render()
+            logging.debug(f"display: {dwell}")
+            self.oled.image(self.img)
+            self.oled.show()
+            if dwell:
+                time.sleep(dwell)
+            else:
+                break
+
+    def fill(self, val):
+        self.oled.fill(val)
+
+    def showImg(self):
         self.oled.image(self.img)
         self.oled.show()
 

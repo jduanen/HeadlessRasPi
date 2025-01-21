@@ -9,7 +9,6 @@
 import logging
 import os
 import sys
-import time
 
 #### move this to __init__.py
 parent_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -49,8 +48,7 @@ class InfoDisplay():
         self.currentPage += 1
         self.displayCurrentPage()
 
-    def displayPages(self, delay=DEF_DELAY_SEC):
+    def displayPages(self):
         for num in range(len(self.pageFuncs)):
             logging.info(f"Display page #{num}")
             self.displayPage(num)
-            time.sleep(delay)

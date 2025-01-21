@@ -6,9 +6,10 @@
 #
 ################################################################################
 
+import logging
+import os
 import sys
 import time
-import os
 
 #### move this to __init__.py
 parent_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -18,22 +19,33 @@ from lib.InfoPage import InfoPage
 from lib.InfoDisplay import InfoDisplay
 
 
-DWELL_SECS = 15
+LOG_LEVEL = "DEBUG"
+
+WIFI_PAGE_DWELL = 5.0
+CONN_PAGE_DWELL = 5.0
+CPU_PAGE_DWELL = 5.0
+MAX_RENDER_RETRIES = 5
+ROW_OFFSET = 11
 
 
 class WiFiPage(InfoPage):
-    @classmethod
-    def _parseOutput(self, s):
-        d = {}
-        for indx, line in enumerate(s.splitlines()):
-            if '=' in line:
-                k, v = line.split('=')
-                d[k] = v
-            else:
-                d[f"L{indx}"] = line
-        return d
+    def __init__(self):
+        super().__init__()
+        self.renderCount = 0
+
+    def _renderDone(self):
+        self.renderCount = 0
+        return WIFI_PAGE_DWELL
+
+    def _checkRenderDone(self):
+        if self.renderCount > MAX_RENDER_RETRIES:
+            self.renderCount = 0
+            return WIFI_PAGE_DWELL
+        self.renderCount += 1
+        return 0.1
 
     def render(self):
+        logging.debug("WIFI Page start")
         r = self.runCmd("/usr/bin/nmcli radio wifi")
         #### FIXME
         if r == "disabled":
@@ -42,62 +54,129 @@ class WiFiPage(InfoPage):
             self.draw.text((0, 0), s, font=font, fill=255)
         elif r == "enabled":
             r = self.runCmd("/usr/sbin/wpa_cli status")
-            info = WiFiPage._parseOutput(r)
-            '''
-            lines = r.splitlines()
-            ifName = lines[0].split()[2].strip()
-            ifAddr = lines[1].split('=')[1]
-            freq = lines[2].split('=')[1]
-            ssid = lines[3].split('=')[1]
-            mode = lines[5].split('=')[1]
-            wpaState = lines[6].split('=')[1]
-            ipAddr = lines[7].split('=')[1]
-            '''
-            self.draw.text((0, 0), "WiFi Enabled", font=self.font, fill=255)
-            self.draw.text((72, 0), info[ifName[1:-1], font=self.font, fill=255)
-            self.draw.text((0, 11), f"{ssid};  {mode}", font=self.font, fill=255)
-            self.draw.text((0, 22), f"{ipAddr}; {wpaState}", font=self.font, fill=255)            
-            self.draw.text((0, 33), f"{ifAddr};  {freq}", font=self.font, fill=255)
-            if mode == "AP":
-                print("AP")
+            info = self._parseOutput(r, '=')
+            row = 0
+            self.draw.text((0, row), "WiFi Enabled", font=self.font, fill=255)
+            self.draw.text((72, row), info['L0'].split()[-1][1:-1], font=self.font, fill=255)
+            row += ROW_OFFSET
+            if info['wpa_state'] == "DISCONNECTED":
+                # device not currently connected, retry a few times
+                self.draw.text((0, row), "DISCONNECTED", font=self.font, fill=255)
+                row += ROW_OFFSET
+                self.draw.text((0, row), info['address'], font=self.font, fill=255)
+                row += ROW_OFFSET
+                return self._checkRenderDone()
+            elif info['wpa_state'] == "COMPLETED":
+                # data connection is in place, device might not yet have IP address
+                self.draw.text((0, row), f"{info['bssid']};  {info['mode']}", font=self.font, fill=255)
+                row += ROW_OFFSET
+                if 'ip_address' in info:
+                    self.draw.text((0, row), f"{info['ip_address']}", font=self.font, fill=255)
+                    row += ROW_OFFSET
+                self.draw.text((0, row), f"{info['wpa_state']};  {info['freq']}", font=self.font, fill=255)
+                row += ROW_OFFSET
+
                 r = self.runCmd("/usr/sbin/iwgetid -m")
-                self.draw.text((0, 44), r, font=self.font, fill=255)
-            elif mode == "STA":
-                print("STA")
+                self.draw.text((0, row), r.replace(" Mode:", "").strip(), font=self.font, fill=255)
+                if 'wifi_generation' in info:
+                    self.draw.text((112, row), f"  [{info['wifi_generation']}]", font=self.font, fill=255)
+                row += ROW_OFFSET
+                if info['mode'] == "AP":
+                    logging.info("AP: TBD")
+                elif info['mode'] == "station":
+                    logging.info("STA: TBD")
+                else:
+                    self.draw.text((0, row), f"Unknown Mode:  {info['mode']}", font=self.font, fill=255)
+                    row += ROW_OFFSET
             else:
-                print("UNKNOWN Mode")
-            '''
-            if mode == Master:
-                iw dev wlan0 info
-                ?
-            elif mode == ?:
-                ?
-            else:
-                ?
-            '''
+                # normal flow is DISCONNECTED -> SCANNING -> COMPLETED
+                # retry a few times
+                self.draw.text((0, row), info['wpa_state'], font=self.font, fill=255)
+                return _checkRenderDone()
         else:
-            self.draw.text((0, 0), "Radio State Unknown", font=self.font, fill=255)
+            self.draw.text((0, row), "Radio State Unknown", font=self.font, fill=255)
+            row += ROW_OFFSET
+            self.draw.text((0, row), r, font=self.font, fill=255)
+            row += ROW_OFFSET
+        logging.debug("Wifi Page done")
+        return self._renderDone()
 
 class ConnectionPage(InfoPage):
+    def _render(self, info):
+        print(f"INFO: {info}")
+        row = 0
+        if info['IN-USE'] != '*':
+            self.draw.text((0, row), "WiFi not in use", font=self.font, fill=255)
+            row += ROW_OFFSET
+            return 2.5
+        else:
+            self.draw.text((0, row), f"SSID: {info['SSID']}", font=self.font, fill=255)
+            row += ROW_OFFSET
+            self.draw.text((0, row), f"Mode: {info['MODE']};  Chan: {info['CHAN']}", font=self.font, fill=255)
+            row += ROW_OFFSET
+            self.draw.text((0, row), f"Rate: {info['RATE']}", font=self.font, fill=255)
+            row += ROW_OFFSET
+            self.draw.text((0, row), f"Signal: {info['SIGNAL']};  {info['BARS']}", font=self.font, fill=255)
+            row += ROW_OFFSET
+            self.draw.text((0, row), f"Security: {info['SECURITY']}", font=self.font, fill=255)
+            row += ROW_OFFSET
+        return CONN_PAGE_DWELL
+    
     def render(self):
-        self.draw.text((0, 0), "TBD", font=self.font, fill=255)
+        #### FIXME figure out how to do dynamic sub-pages properly
+        logging.debug("CONN Page start")
+        r = self.runCmd("nmcli -t -m m device wifi list")
+        lines = r.splitlines()
+        groups = [lines[i:i + 9] for i in range(0, len(lines), 9)]
+        infoList = []
+        for group in groups:
+            infoList.append({line.split(':', 1)[0]: line.split(':', 1)[1] for line in group})
+        for indx, info in enumerate(infoList):
+            self.fill(0)
+            dwell = self._render(info)
+            self.showImg()
+            if indx >= len(infoList):
+                time.sleep(dwell)
+                break
+            time.sleep(dwell)
+            self.clear()
+        logging.debug("CONN Page done")
+        return 0
 
 class CpuPage(InfoPage):
     def render(self):
+        logging.debug("CPU Page start")
+        #### TODO add /proc/meminfo and df -k /
+        row = 0
+        r = self.runCmd("cat /sys/class/thermal/thermal_zone0/temp")
+        temp = int(r) / 1000.0
+        self.draw.text((0, row), f"Temp: {temp}", font=self.font, fill=255)
+        row += ROW_OFFSET
+
+        r = self.runCmd("cat /proc/meminfo")
+        info = self._parseOutput(r, ':')
+        print(f"M> {info}")
+
+        r = self.runCmd("df -k /")
+        info = r.splitlines()[-1].split().strip()
+        print(f"D> {info}")
+
         r = self.runCmd("/usr/bin/uptime")
-        #### FIXME
         vals = r.split(',')
         #### self.font = ImageFont.truetype(<path/font.ttf>, 16)
-        self.draw.text((0, 0), vals[0].strip(), font=self.font, fill=255)
-        self.draw.text((0, 11), vals[2].strip(), font=self.font, fill=255)
-        self.draw.text((0, 22), vals[3].strip(), font=self.font, fill=255)
-        print(f"RESULT: {vals[0]}, {vals[2]}, {vals[3]}")
-        #### TODO add cpu temp and /proc/meminfo and df -k /
+        self.draw.text((0, row), vals[0].strip(), font=self.font, fill=255)
+        row += ROW_OFFSET
+        self.draw.text((0, row), vals[2].strip(), font=self.font, fill=255)
+        row += ROW_OFFSET
+        self.draw.text((0, row), vals[3].strip(), font=self.font, fill=255)
+        row += ROW_OFFSET
+        logging.debug("CPU Page done")
+        return CPU_PAGE_DWELL
 
-pageFuncs = (WiFiPage(), ConnectionPage(), CpuPage())
 
-display = InfoDisplay(pageFuncs)
-
-display.displayPages(DWELL_SECS)
-
-display.clear()
+if __name__ == "__main__":
+    logging.basicConfig(level=LOG_LEVEL)
+    pageFuncs = (WiFiPage(), ConnectionPage(), CpuPage())
+    display = InfoDisplay(pageFuncs)
+    display.displayPages()
+    display.clear()
