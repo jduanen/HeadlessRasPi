@@ -119,7 +119,7 @@ class ConnectionPage(InfoPage):
             row += ROW_OFFSET
             self.draw.text((0, row), f"Signal: {info['SIGNAL']}%", font=self.font, fill=255)
             row += ROW_OFFSET
-            self.draw.text((0, row), f"Bars: {info['BARS'].count('_')}", font=self.font, fill=255)
+            self.draw.text((0, row), f"Bars: {4 - info['BARS'].count('_')}", font=self.font, fill=255)
             row += ROW_OFFSET
             return 1.0
         else:
@@ -129,7 +129,7 @@ class ConnectionPage(InfoPage):
             row += ROW_OFFSET
             self.draw.text((0, row), f"Rate: {info['RATE']};  {info['SIGNAL']}%", font=self.font, fill=255)
             row += ROW_OFFSET
-            self.draw.text((0, row), f"RSSI: {info['RSSI']};  Bars: {info['BARS'].count('_')}", font=self.font, fill=255)
+            self.draw.text((0, row), f"RSSI: {info['RSSI']};  Bars: {4 - info['BARS'].count('_')}", font=self.font, fill=255)
             row += ROW_OFFSET
             self.draw.text((0, row), f"Security: {info['SECURITY']}", font=self.font, fill=255)
             row += ROW_OFFSET
