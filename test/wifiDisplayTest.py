@@ -109,7 +109,6 @@ class WiFiPage(InfoPage):
 
 class ConnectionPage(InfoPage):
     def _render(self, info):
-        print(f"INFO: {info}")
         row = 0
         if info['IN-USE'] != '*':
             self.draw.text((0, row), "WiFi not in use", font=self.font, fill=255)
@@ -138,17 +137,12 @@ class ConnectionPage(InfoPage):
     
     def render(self):
         logging.debug(f"{self.__class__.__name__} start")
-        r = self.runCmd("cat /proc/net/wireless")
-        lines = r.splitlines()
-        rssis = {}
-        for indx, line in enumerate(lines):
-            if indx in (0, 1):
-                continue
-            parts = line.split()
-            rssis[parts[0][:-1]] = parts[3][:-1]
-        if len(rssis) > 1:
-            logging.warning(f"Unexpected RSSI values: {rssis}")
-        print(f">>> {rssis}")
+        r = self.runCmd("iw dev wlan0 link")
+        if r.count('\n') < 7:
+            rssi = {}
+        else:
+            lines = r.split('\n', 1)[1]
+            rssi = self._parseOutput(lines, ":")
 
         r = self.runCmd("nmcli -t -m m device wifi list --rescan yes")
         lines = r.splitlines()
@@ -157,6 +151,10 @@ class ConnectionPage(InfoPage):
         for group in groups:
             infoList.append({line.split(':', 1)[0]: line.split(':', 1)[1] for line in group})
         for info in infoList:
+            if rssi and (info['SSID'] == rssi['SSID']):
+                info['RSSI'] = rssi['signal']
+            else:
+                info['RSSI'] = "?"
             dwell = self._render(info)
             self.displaySubpage(dwell)
         logging.debug(f"{self.__class__.__name__} done")
