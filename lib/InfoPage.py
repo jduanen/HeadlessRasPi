@@ -34,12 +34,10 @@ class InfoPage(ABC):
         #### TODO make this support other displays, and at different I2C addresses
         self.i2c = board.I2C()
         self.oled = adafruit_ssd1306.SSD1306_I2C(128, 64, self.i2c)
-
         self.font = ImageFont.load_default()
         #### TODO figure out if I should make the mode parameter variable
         self.img = Image.new("1", (self.oled.width, self.oled.height))
         self.draw = ImageDraw.Draw(self.img)
-
         self.clear()
 
     def runCmd(self, cmd):
@@ -56,23 +54,20 @@ class InfoPage(ABC):
         pass
 
     def display(self):
-        while True:
-            self.oled.fill(0)
-            dwell = self.render()
-            logging.debug(f"display: {dwell}")
-            self.oled.image(self.img)
-            self.oled.show()
-            if dwell:
-                time.sleep(dwell)
-            else:
-                break
-
-    def fill(self, val):
-        self.oled.fill(val)
-
-    def showImg(self):
+        #self.oled.fill(0)
+        dwell = self.render()
+        logging.debug(f"display: {dwell}")
         self.oled.image(self.img)
         self.oled.show()
+        time.sleep(dwell)
+        self.clear()
+
+    def displaySubpage(self, dwell):
+        self.oled.fill(0)
+        logging.debug(f"displaySubpage: {dwell}")
+        self.oled.image(self.img)
+        self.oled.show()
+        time.sleep(dwell)
 
     def clear(self):
         self.oled.fill(0)

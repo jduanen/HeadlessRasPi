@@ -17,9 +17,6 @@ sys.path.append(parent_dir)
 from lib.InfoPage import InfoPage
 
 
-DEF_DELAY_SEC = 1.5  # 1500msec
-
-
 class InfoDisplay():
     def __init__(self, pageFuncs):
         if not isinstance(pageFuncs, (list, tuple)) or (len(pageFuncs) < 1):
@@ -50,5 +47,5 @@ class InfoDisplay():
 
     def displayPages(self):
         for num in range(len(self.pageFuncs)):
-            logging.info(f"Display page #{num}")
+            logging.debug(f"Display page #{num}")
             self.displayPage(num)

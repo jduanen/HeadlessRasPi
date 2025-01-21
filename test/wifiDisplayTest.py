@@ -23,7 +23,9 @@ LOG_LEVEL = "DEBUG"
 
 WIFI_PAGE_DWELL = 5.0
 CONN_PAGE_DWELL = 5.0
-CPU_PAGE_DWELL = 5.0
+CPU_PAGE_DWELL = 3.0
+MEMORY_PAGE_DWELL = 5.0
+
 MAX_RENDER_RETRIES = 5
 ROW_OFFSET = 11
 
@@ -35,17 +37,20 @@ class WiFiPage(InfoPage):
 
     def _renderDone(self):
         self.renderCount = 0
+        self.done = True
         return WIFI_PAGE_DWELL
 
     def _checkRenderDone(self):
         if self.renderCount > MAX_RENDER_RETRIES:
             self.renderCount = 0
+            self.done = True
             return WIFI_PAGE_DWELL
         self.renderCount += 1
+        self.done = False
         return 0.1
 
     def render(self):
-        logging.debug("WIFI Page start")
+        logging.debug(f"{self.__class__.__name__} start")
         r = self.runCmd("/usr/bin/nmcli radio wifi")
         #### FIXME
         if r == "disabled":
@@ -60,6 +65,7 @@ class WiFiPage(InfoPage):
             self.draw.text((72, row), info['L0'].split()[-1][1:-1], font=self.font, fill=255)
             row += ROW_OFFSET
             if info['wpa_state'] == "DISCONNECTED":
+
                 # device not currently connected, retry a few times
                 self.draw.text((0, row), "DISCONNECTED", font=self.font, fill=255)
                 row += ROW_OFFSET
@@ -98,7 +104,7 @@ class WiFiPage(InfoPage):
             row += ROW_OFFSET
             self.draw.text((0, row), r, font=self.font, fill=255)
             row += ROW_OFFSET
-        logging.debug("Wifi Page done")
+        logging.debug(f"{self.__class__.__name__} done")
         return self._renderDone()
 
 class ConnectionPage(InfoPage):
@@ -108,7 +114,7 @@ class ConnectionPage(InfoPage):
         if info['IN-USE'] != '*':
             self.draw.text((0, row), "WiFi not in use", font=self.font, fill=255)
             row += ROW_OFFSET
-            return 2.5
+            return 1.0
         else:
             self.draw.text((0, row), f"SSID: {info['SSID']}", font=self.font, fill=255)
             row += ROW_OFFSET
@@ -123,60 +129,69 @@ class ConnectionPage(InfoPage):
         return CONN_PAGE_DWELL
     
     def render(self):
-        #### FIXME figure out how to do dynamic sub-pages properly
-        logging.debug("CONN Page start")
-        r = self.runCmd("nmcli -t -m m device wifi list")
+        logging.debug(f"{self.__class__.__name__} start")
+        r = self.runCmd("nmcli -t -m m device wifi list --rescan yes")
         lines = r.splitlines()
         groups = [lines[i:i + 9] for i in range(0, len(lines), 9)]
         infoList = []
         for group in groups:
             infoList.append({line.split(':', 1)[0]: line.split(':', 1)[1] for line in group})
-        for indx, info in enumerate(infoList):
-            self.fill(0)
+        for info in infoList:
             dwell = self._render(info)
-            self.showImg()
-            if indx >= len(infoList):
-                time.sleep(dwell)
-                break
-            time.sleep(dwell)
-            self.clear()
-        logging.debug("CONN Page done")
+            self.displaySubpage(dwell)
+        logging.debug(f"{self.__class__.__name__} done")
         return 0
 
 class CpuPage(InfoPage):
     def render(self):
-        logging.debug("CPU Page start")
+        logging.debug(f"{self.__class__.__name__} start")
         #### TODO add /proc/meminfo and df -k /
         row = 0
         r = self.runCmd("cat /sys/class/thermal/thermal_zone0/temp")
         temp = int(r) / 1000.0
-        self.draw.text((0, row), f"Temp: {temp}", font=self.font, fill=255)
+        self.draw.text((0, row), f"Temp: {temp}\u00b0C", font=self.font, fill=255)
         row += ROW_OFFSET
 
+        r = self.runCmd("/usr/bin/uptime -p")
+        self.draw.text((0, row), r.strip(), font=self.font, fill=255)
+        row += ROW_OFFSET
+
+        r = self.runCmd("/usr/bin/cat /proc/loadavg")
+        vals = r.split(' ')[0:-1]
+        self.draw.text((0, row), " ".join(vals), font=self.font, fill=255)
+        row += ROW_OFFSET
+        logging.debug(f"{self.__class__.__name__} done")
+        return CPU_PAGE_DWELL
+
+class MemoryPage(InfoPage):
+    def render(self):
+        logging.debug(f"{self.__class__.__name__} start")
         r = self.runCmd("cat /proc/meminfo")
         info = self._parseOutput(r, ':')
-        print(f"M> {info}")
+        row = 0
+        info['MemAvail'] = info['MemAvailable']
+        for key in ('MemTotal', 'MemFree', 'MemAvail'):
+            self.draw.text((0, row), f"{key}: {info[key]}", font=self.font, fill=255)
+            row += ROW_OFFSET
 
-        r = self.runCmd("df -k /")
-        info = r.splitlines()[-1].split().strip()
-        print(f"D> {info}")
-
-        r = self.runCmd("/usr/bin/uptime")
-        vals = r.split(',')
-        #### self.font = ImageFont.truetype(<path/font.ttf>, 16)
-        self.draw.text((0, row), vals[0].strip(), font=self.font, fill=255)
-        row += ROW_OFFSET
-        self.draw.text((0, row), vals[2].strip(), font=self.font, fill=255)
-        row += ROW_OFFSET
-        self.draw.text((0, row), vals[3].strip(), font=self.font, fill=255)
-        row += ROW_OFFSET
-        logging.debug("CPU Page done")
-        return CPU_PAGE_DWELL
+        for mnt in ('/', '/run', '/run/user/1000'):
+            r = self.runCmd(f"df -k {mnt} -h")
+            info = r.splitlines()[1].split()
+            vals = " ".join(val for val in info[1:5])
+            self.draw.text((1, row), f"{mnt}: {vals}", font=self.font, fill=255)
+            row += ROW_OFFSET
+        logging.debug(f"{self.__class__.__name__} done")
+        return MEMORY_PAGE_DWELL
 
 
 if __name__ == "__main__":
     logging.basicConfig(level=LOG_LEVEL)
-    pageFuncs = (WiFiPage(), ConnectionPage(), CpuPage())
+    pageFuncs = (WiFiPage(), ConnectionPage(), CpuPage(), MemoryPage())
+    pfNames = ", ".join(pf.__class__.__name__ for pf in pageFuncs)
+    logging.debug(f"Pages: {pfNames}")
+
     display = InfoDisplay(pageFuncs)
     display.displayPages()
     display.clear()
+
+    #### self.font = ImageFont.truetype(<path/font.ttf>, 16)
