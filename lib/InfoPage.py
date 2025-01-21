@@ -70,7 +70,6 @@ class InfoPage(ABC):
         self.clear()
 
     def clear(self):
-        print("CLEAR")
         self.draw.rectangle((0, 0, self.img.width, self.img.height), fill=0)
         self.oled.fill(0)
         self.oled.show()
