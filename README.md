@@ -15,7 +15,7 @@ WiFi Provisioning and Status Display for Headless Raspberry Pi
 
 ## Software Setup
 
-### WiFi Provisioning
+### WiFi Provisioning SW Setup
 
 * install Comitup
   - ?
@@ -24,22 +24,21 @@ WiFi Provisioning and Status Display for Headless Raspberry Pi
 * patch NetworkManager.py
   - ?
 
-### Display
+### Display SW Setup
 
 * enable I2C on RasPi
   - 'sudo raspi-config'
     * Interface Options -> I2C: enable
   - reboot RasPi
 
-* install libraries
+* install Python libraries in a venv
   - sudo apt install virtualenvwrapper python3-virtualenvwrapper
   - echo "export WORKON_HOME=$HOME/.virtualenvs" >> ~/.bashrc
-    echo "export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python" >> ~/.bashrc
-    echo "source /usr/share/virtualenvwrapper/virtualenvwrapper.sh" >> ~/.bashrc
+  - echo "export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python" >> ~/.bashrc
+  - echo "source /usr/share/virtualenvwrapper/virtualenvwrapper.sh" >> ~/.bashrc
   - mkvirtualenv --python=`which python3` --prompt=wifi WIFI
   - workon WIFI
-  - pip3 install adafruit-circuitpython-ssd1306
-  - pip3 install pillow
+  - pip3 install -r requirements
 
 # Use
 
