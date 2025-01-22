@@ -11,12 +11,19 @@ export WORKON_HOME=/home/jdn/.virtualenvs
 source /usr/share/virtualenvwrapper/virtualenvwrapper.sh
 workon WIFI
 
-if [ "$1" = "wlan0" ]; then
-    if [ "$2" = "up" ]; then
-        if ! pgrep -f systemDisplay.py > /dev/null; then
-            /home/jdn/Code/HeadlessRasPi/src/systemDisplay.py
-        else
-            logger -t systemDisplay "Another instance is already running"
+if i2cdetect -y 1 | grep -q " 3c "; then
+    # I2C OLED display at address 0x3c is present
+    if [ "$1" = "wlan0" ]; then
+        if [ "$2" = "down" ] || [ "$2" = "up" ]; then
+            if ! pgrep -f systemDisplay.py > /dev/null; then
+                /home/jdn/Code/HeadlessRasPi/src/systemDisplay.py
+            else
+                logger -t systemDisplay "Another instance is already running"
+            fi
         fi
     fi
+else
+    logger -t systemDisplay "I2C device at address 0x3c is not found"
+    exit 1
 fi
+exit 0
