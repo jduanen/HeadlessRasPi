@@ -21,7 +21,7 @@ from lib.InfoDisplay import InfoDisplay
 
 LOG_LEVEL = "WARNING"  # "DEBUG"
 
-WIFI_PAGE_DWELL = 5.0
+WIFI_PAGE_DWELL = 10.0
 CONN_PAGE_DWELL = 6.0
 CPU_PAGE_DWELL =  4.0
 MEMORY_PAGE_DWELL = 5.0
