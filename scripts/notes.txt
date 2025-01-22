@@ -1,1 +1,11 @@
 * To disable feature causing problems, move brcmfmac.conf to /etc/modprobe.d/brcmfmac.conf
+
+* The comitup utility writes connection files to /etc/NetworkManager/system-connections/
+  - comitup-347-0000.nmconnection: the 10.41.0.1 config address
+    * the [connection]->autoconnect flag set to 'false'
+    * the [ipv4]->method = manual
+  - <SSID>.nmconnection: the connection that was provisioned via the web interface
+    * this should show be chmod 600
+    * this does not have the [connection]->autoconnect flag set to 'true'
+      - it doesn't exist at all in this file
+    * the [ipv4]->method = auto
