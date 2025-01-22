@@ -1,0 +1,1 @@
+* To disable feature causing problems, move brcmfmac.conf to /etc/modprobe.d/brcmfmac.conf
