@@ -21,10 +21,10 @@ from lib.InfoDisplay import InfoDisplay
 
 LOG_LEVEL = "WARNING"  # "DEBUG"
 
-WIFI_PAGE_DWELL = 1 #5.0
-CONN_PAGE_DWELL = 10.0
-CPU_PAGE_DWELL = 1 # 3.0
-MEMORY_PAGE_DWELL = 1 # 5.0
+WIFI_PAGE_DWELL = 5.0
+CONN_PAGE_DWELL = 6.0
+CPU_PAGE_DWELL =  4.0
+MEMORY_PAGE_DWELL = 5.0
 
 MAX_RENDER_RETRIES = 5
 ROW_OFFSET = 11
@@ -37,16 +37,15 @@ class WiFiPage(InfoPage):
 
     def _renderDone(self):
         self.renderCount = 0
-        self.done = True
         return WIFI_PAGE_DWELL
 
     def _checkRenderDone(self):
         if self.renderCount > MAX_RENDER_RETRIES:
             self.renderCount = 0
-            self.done = True
             return WIFI_PAGE_DWELL
         self.renderCount += 1
         self.done = False
+        logging.debug("WiFiPage retry render")
         return 0.1
 
     def render(self):
