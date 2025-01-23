@@ -106,7 +106,7 @@ class WiFiPage(InfoPage):
         logging.debug(f"{self.__class__.__name__} done")
         return self._renderDone()
 
-class ConnectionPage(InfoPage):
+class AccessPointPage(InfoPage):
     def _render(self, info):
         row = 0
         if info['IN-USE'] != '*':
@@ -203,7 +203,7 @@ class MemoryPage(InfoPage):
 
 if __name__ == "__main__":
     logging.basicConfig(level=LOG_LEVEL)
-    pageFuncs = (WiFiPage(), ConnectionPage(), CpuPage(), MemoryPage())
+    pageFuncs = (WiFiPage(), AccessPointPage(), CpuPage(), MemoryPage())
     pfNames = ", ".join(pf.__class__.__name__ for pf in pageFuncs)
     logging.debug(f"Pages: {pfNames}")
 
