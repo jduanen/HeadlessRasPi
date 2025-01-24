@@ -15,6 +15,7 @@ from time import sleep
 
 
 LOG_LEVEL = "DEBUG"  # "WARNING"
+PROG_PATH = "/home/jdn/Code/HeadlessRasPi/src/systemDisplay.py"
 
 
 def isRunning(progName):
@@ -32,7 +33,7 @@ def runScript():
         sleep(1)
 
     logging.debug("Starting systemDisplay.py")
-    subprocess.run(["${HOME}/Code/HeadlessRasPi/src/systemDisplay.py"])
+    subprocess.run([PROG_PATH])
     logging.debug("systemDisplay.py done")
 
 
