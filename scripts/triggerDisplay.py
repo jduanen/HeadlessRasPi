@@ -21,7 +21,7 @@ def isRunning(progName):
     return any(progName in p.name().lower() for p in psutil.process_iter())
 
 def getRunningPrograms(progName):
-    return [p in psutil.process_iter() if p.name() == progName]
+    return [p for p in psutil.process_iter() if p.name() == progName]
 
 def getRunningProgramsArg(progName, arg1):
     return {p.pid: p.cmdline() for p in psutil.process_iter() if (p.name() == progName) and (len(p.cmdline()) > 1) and (p.cmdline()[1].endswith(arg1))}
