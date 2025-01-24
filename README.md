@@ -5,6 +5,13 @@ This repo provides headless Raspberry Pi systems with a means of provisioning
 the device's WiFi connection and displaying information about the system on a
 small display attached to the Raspberry Pi's 40-pin connector.
 
+## Mini-Display Page Examples
+
+![WiFi Page](wifiPage.png)
+![Access Point Page](apPage.png)
+![CPU Page](cpuPage.png)
+![Memory Page](memoryPage.png)
+
 **TODO**
 * Add option for another GPIO pin switch to trigger the display
 * Describe what happens when you mis-provision the WiFi
