@@ -8,7 +8,6 @@ small display attached to the Raspberry Pi's 40-pin connector.
 ## Mini-Display Page Examples
 
 ![WiFi Page](wifiPage.png)
-![Access Point Page](apPage.png)
 ![CPU Page](cpuPage.png)
 ![Memory Page](memoryPage.png)
 
