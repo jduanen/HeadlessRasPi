@@ -27,7 +27,7 @@ def getRunningProgramsArg(progName, arg1):
     return {p.pid: p.cmdline() for p in psutil.process_iter() if (p.name() == progName) and (len(p.cmdline()) > 1) and (p.cmdline()[1].endswith(arg1))}
 
 def runScript():
-    if getRunningProgramsArg("systemDisplay.py"):
+    if getRunningProgramsArg("python3", "systemDisplay.py"):
         logging.debug("systemDisplay.py running, waiting")
         sleep(1)
 
