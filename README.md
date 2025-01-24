@@ -204,3 +204,4 @@ pages on the Mini-Display.
   - it should be possible to apply power to the raspi and then see what the machine is doing, what the state of the wifi link is, and what APs the raspi can see
     * the signal strength, channel, frequency, and generation of WiFi are displayed when the raspi is connected to an AP
     * a subset of the WiFi link information is displayed when the raspi is offering the provisioning web page in AP mode
+  - it is also possible to trigger the display of information at any time by shorting GPIO20 (pin 38) to ground for more than 15 seconds
