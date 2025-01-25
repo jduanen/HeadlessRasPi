@@ -15,8 +15,8 @@ if i2cdetect -y 1 | grep -q " 3c "; then
     # I2C OLED display at address 0x3c is present
     if [ "$1" = "wlan0" ]; then
         if [ "$2" = "down" ] || [ "$2" = "up" ]; then
-            if ! pgrep -f systemDisplay.py > /dev/null; then
-                /home/jdn/Code/HeadlessRasPi/src/systemDisplay.py
+            if ! pgrep -f infoDisplay.py > /dev/null; then
+                /home/jdn/Code/HeadlessRasPi/src/infoDisplay.py
             else
                 logger -t systemDisplay "Another instance is already running"
             fi
