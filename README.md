@@ -50,7 +50,7 @@ The display of information is triggered by a script (i.e.,
 subsystem state changes.
 
 This repo currently includes a single instance of a system information
-display app (i.e., `src/systemDisplay.py`), which provides four Pages that
+display app (i.e., `src/infoDisplay.py`), which provides four Pages that
 provide information on WiFi, WiFi Connections, CPU, and Memory subsystems.
 
 ### WiFi Page
@@ -181,6 +181,8 @@ AP mode to await connection with a browser.
 
 ## Information Display Switch
 
+**N.B.** There's a bug in the gpiozero package on bookworm that keeps this from working
+
 A momentary switch or a jumper can be used to short GPIO20 to ground for 15
 or more seconds to cause the device to trigger the display of information
 pages on the Mini-Display.
@@ -188,6 +190,26 @@ pages on the Mini-Display.
 * Connections:
   - `GND`: pin 39 (bottom row, farthest from the edge)
   - `GPIO20`: pin 38 (next to the bottom row, closest to the edge)
+
+## Information Display Trigger
+
+In order to trigger the information display when a headless RasPi is running,
+but not connected to a wired/wireless network, a udev rule can be used to
+trigger the display when a given USB device is inserted into the RasPi.
+
+The example in this repo triggers when a specific USB thumb drive is inserted.
+The information display will be triggered once upon insertion of the USB device.
+
+### Setup
+
+A udev rule that defines the trigger device and the location of the script must
+be copied into '/etc/udev/rules.d/' as root.
+
+To determine the 'idVendor', and 'idProduct' values for the USB device to be
+used as a trigger, run `lsusb` and locate the device's ID.
+For the device used in the included example in this repo, this is the lsusb
+output:
+**"Bus 001 Device 008: ID 090c:1000 Silicon Motion, Inc. - Taiwan (formerly Feiya Technology Corp.) Flash Drive"**
 
 # Usage
 
