@@ -1,0 +1,1 @@
+ACTION=="add", SUBSYSTEM=="usb", ATTRS{idVendor}=="090c", ATTRS{idProduct}=="1000", RUN+="/home/jdn/Code/HeadlessRasPi/scripts/triggerInfoDisplay.sh"
