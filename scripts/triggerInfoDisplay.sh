@@ -11,5 +11,5 @@ if pgrep -f "infoDisplay.py" > /dev/null; then
     logger -t infoDisplay "infoDisplay.py already running"
 else
     logger -t infoDisplay "triggerInfoDisplay.sh starting infoDisplay.py"
-    python3 /home/jdn/Code/HeadlessRasPi/src/infoDisplay.py
+    python3 /home/jdn/Code/HeadlessRasPi/src/infoDisplay.py&
 fi
