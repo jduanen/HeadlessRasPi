@@ -9,10 +9,13 @@
 #  * chmod +x ${HOME}/Code/HeadlessRasPi/scripts/triggerDisplay.sh
 #
 
+#sudo -u jdn << EOF
 export WORKON_HOME=/home/jdn/.virtualenvs
 source /usr/share/virtualenvwrapper/virtualenvwrapper.sh
 workon WIFI
 
-sudo python3 /home/jdn/Code/HeadlessRasPi/scripts/triggerDisplay.py
+cd /home/jdn/Code/HeadlessRasPi/scripts/
+python3 ./triggerDisplay.py
 
 logger -t systemDisplay "triggerDisplay.py exited"
+#EOF
