@@ -7,6 +7,9 @@ export WORKON_HOME=/home/jdn/.virtualenvs
 source /usr/share/virtualenvwrapper/virtualenvwrapper.sh
 workon WIFI
 
-python3 /home/jdn/Code/HeadlessRasPi/src/infoDisplay.py
-
-logger -t systemDisplay "triggerDisplay.py exited"
+if pgrep -f "infoDisplay.py" > /dev/null; then
+    logger -t infoDisplay "infoDisplay.py already running"
+else
+    logger -t infoDisplay "triggerInfoDisplay.sh starting infoDisplay.py"
+    python3 /home/jdn/Code/HeadlessRasPi/src/infoDisplay.py
+fi
