@@ -21,7 +21,6 @@
 
 from datetime import timedelta
 import logging
-import psutil
 import subprocess
 
 import gpiod
@@ -30,11 +29,7 @@ from gpiod.line import Bias, Direction, Edge, Value
 
 PIN_NUMBER = 20
 LOG_LEVEL = "WARNING"
-PROG_PATH = "/home/jdn/Code/HeadlessRasPi/src/infoDisplay.py"
-
-
-def getRunningProgramsArg(progName, arg1):
-    return {p.pid: p.cmdline() for p in psutil.process_iter() if (p.name() == progName) and (len(p.cmdline()) > 1) and (p.cmdline()[1].endswith(arg1))}
+PROG_PATH = "/home/jdn/Code/HeadlessRasPi/scripts/triggerDisplay.sh"
 
 
 if __name__ == "__main__":
@@ -53,16 +48,15 @@ if __name__ == "__main__":
         }
     )
 
-    while True:
-        logging.debug("Wait for event")
-        for lineEvent in rqst.read_edge_events():
-            logging.debug(f"Got event: {lineEvent}")
-            if lineEvent.event_type == lineEvent.Type.FALLING_EDGE:
-                logging.debug(f"Line {PIN_NUMBER} Falling Edge @ {lineEvent.timestamp_ns}: calling script")
-                if getRunningProgramsArg("python3", "infoDisplay.py"):
-                    logging.debug("infoDisplay.py running, waiting")
-                    sleep(1)
-                subprocess.run([PROG_PATH])
-                break
-    logging.debug("Exiting")
-    rqst.release()
+    try:
+        while True:
+            logging.debug("Wait for event")
+            for lineEvent in rqst.read_edge_events():
+                logging.debug(f"Got event: {lineEvent}")
+                if lineEvent.event_type == lineEvent.Type.FALLING_EDGE:
+                    logging.debug(f"Line {PIN_NUMBER} Falling Edge @ {lineEvent.timestamp_ns}: calling script")
+                    subprocess.run([PROG_PATH])
+    except KeyboardInterrupt:
+        logging.debug("Exiting")
+    finally:
+        rqst.release()
