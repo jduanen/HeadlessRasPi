@@ -8,7 +8,7 @@ Group=jdn
 WorkingDirectory=/home/jdn/Code/HeadlessRasPi/scripts
 Environment="VIRTUALENVWRAPPER_PYTHON=/home/jdn/.virtualenvs/WIFI/bin/python"
 Environment="WORKON_HOME=/home/jdn/.virtualenvs"
-ExecStart=/bin/bash -c 'source /usr/local/bin/virtualenvwrapper.sh && workon WIFI && python /home/jdn/Code/HeadlessRasPi/scripts/infoDisplayService.py'
+ExecStart=/bin/bash -c 'source /usr/share/virtualenvwrapper/virtualenvwrapper.sh && workon WIFI && python /home/jdn/Code/HeadlessRasPi/scripts/infoDisplayService.py'
 Restart=always
 
 [Install]
