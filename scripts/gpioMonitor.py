@@ -35,6 +35,7 @@ PROG_PATH = "/home/jdn/Code/HeadlessRasPi/scripts/triggerDisplay.py"
 if __name__ == "__main__":
     logging.basicConfig(level=LOG_LEVEL)
 
+    logging.debug("get request")
     rqst = gpiod.request_lines(
         "/dev/gpiochip0",
         consumer="gpioMonitor",
@@ -48,9 +49,12 @@ if __name__ == "__main__":
     )
 
     while True:
-        ev_line = request.wait_edge_events()
-        if ev_line == Edge.FALLING:
+        logging.debug("Wait for event")
+        lineEvent = rqst.wait_edge_events()
+        logging.debug(f"Got event: {lineEvent}")
+        if lineEvent == Edge.FALLING:
             logging.debug("Line {PIN_NUMBER} Falling Edge: calling script")
             subprocess.run([PROG_PATH])
+            break
     logging.debug("Exiting")
-    request.release()
+    rqst.release()
