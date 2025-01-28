@@ -201,16 +201,14 @@ pages on the Mini-Display.
   - `GPIO20`: pin 38 (next to the bottom row, closest to the edge)
 
 To enable the display trigger switch, perform the following operations:
-* install triggerhappy
-  - `sudo apt-get update`
-  - `sudo apt-get install triggerhappy`
-* install (globally) the python gpiod package
-  - `workon WIFI`
-  - `pip3 install -r requirements`
-* copy conf file to /etc
-  - `sudo cp ${HOME}/Code/HeadlessRasPi/etc/triggerhappy/triggers.d/gpio_trigger.conf /etc/triggerhappy/triggers.d/`
-* restart triggerhappy service
-  - `sudo systemctl restart triggerhappy`
+* install service description
+  - `sudo cp ${HOME}/Code/HeadlessRasPi/etc/systemd/system/infoDisplay.service /etc/systemd/system/`
+* reload systemd
+  - `sudo systemctl daemon-reload`
+* start the service
+  - `sudo systemctl start infoDisplay`
+* enable start of service on boot
+  - `sudo systemctl enable infoDisplay`
 
 ### Information Display USB Trigger
 
