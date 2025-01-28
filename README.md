@@ -188,13 +188,13 @@ trigger the display.
 
 ### Information Display Trigger Switch
 
-**N.B.** There's a bug in the gpiozero package on bookworm that keeps this
-from working, so this now uses the triggerhappy daemon and the python gpiod
-package.
-
 A momentary switch or a jumper can be used to short GPIO20 to ground for 15
 or more seconds to cause the device to trigger the display of information
 pages on the Mini-Display.
+
+**N.B.** There's a bug in the gpiozero package on bookworm that keeps the
+several of my other attempts from working, so the display service uses things
+that work.
 
 * Connections:
   - `GND`: pin 39 (bottom row, farthest from the edge)
