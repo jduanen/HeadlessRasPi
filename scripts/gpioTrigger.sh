@@ -26,6 +26,7 @@ if pgrep -f "${INFO_DISPLAY}" > /dev/null; then
   logger -t gpioTrigger "previous infoDisplay.py running, waiting"
   pgrep -f "${INFO_DISPLAY}" | xargs wait
   logger -t gpioTrigger "previous infoDisplay.py finished running"
+fi
 
 # run infoDisplay
 logger -t gpioTrigger "infoDisplay.py called"
