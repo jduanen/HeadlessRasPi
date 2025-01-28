@@ -1,6 +1,8 @@
 #!/bin/bash
 #
-# Run the script to trigger the information display when a button is pushed
+# Run the script to trigger the information display when a button is pushed.
+# It sets up the venv needed to run the infoDisplay.py script, but calls the
+# triggerDisplay.py script first to ensure that it's not already running.
 # 
 # Run this at system startup:
 #  * sudo ex ~/.config/wayfire.ini
