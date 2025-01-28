@@ -179,9 +179,18 @@ AP mode to await connection with a browser.
   - `GND`: pin 39 (bottom row, farthest from the edge)
   - `GPIO21`: pin 40 (bottom row, closest to the edge)
 
-## Information Display Switch
+## Information Display Triggers
 
-**N.B.** There's a bug in the gpiozero package on bookworm that keeps this from working
+By default, the Information Display is triggered whenever the WiFi connection
+state changes. In addition to this, it is sometimes useful to trigger the
+display at other times, so a number of different mechanisms are provided to
+trigger the display.
+
+### Information Display Trigger Switch
+
+**N.B.** There's a bug in the gpiozero package on bookworm that keeps this
+from working, so this now uses the triggerhappy daemon and the python gpiod
+package.
 
 A momentary switch or a jumper can be used to short GPIO20 to ground for 15
 or more seconds to cause the device to trigger the display of information
@@ -191,7 +200,19 @@ pages on the Mini-Display.
   - `GND`: pin 39 (bottom row, farthest from the edge)
   - `GPIO20`: pin 38 (next to the bottom row, closest to the edge)
 
-## Information Display Trigger
+To enable the display trigger switch, perform the following operations:
+* install triggerhappy
+  - `sudo apt-get update`
+  - `sudo apt-get install triggerhappy`
+* install (globally) the python gpiod package
+  - `workon WIFI`
+  - `pip3 install -r requirements`
+* copy conf file to /etc
+  - `sudo cp ${HOME}/Code/HeadlessRasPi/etc/triggerhappy/triggers.d/gpio_trigger.conf /etc/triggerhappy/triggers.d/`
+* restart triggerhappy service
+  - `sudo systemctl restart triggerhappy`
+
+### Information Display USB Trigger
 
 In order to trigger the information display when a headless RasPi is running,
 but not connected to a wired/wireless network, a udev rule can be used to
@@ -200,16 +221,17 @@ trigger the display when a given USB device is inserted into the RasPi.
 The example in this repo triggers when a specific USB thumb drive is inserted.
 The information display will be triggered once upon insertion of the USB device.
 
-### Setup
-
-A udev rule that defines the trigger device and the location of the script must
-be copied into '/etc/udev/rules.d/' as root.
-
-To determine the 'idVendor', and 'idProduct' values for the USB device to be
-used as a trigger, run `lsusb` and locate the device's ID.
-For the device used in the included example in this repo, this is the lsusb
-output:
+For the example included in this repo, this is the line in the output pf `lsusb` that contains the 'idVendor':'idProduct' tuple:
 **"Bus 001 Device 008: ID 090c:1000 Silicon Motion, Inc. - Taiwan (formerly Feiya Technology Corp.) Flash Drive"**
+
+To enable the USB trigger, perform the following operations:
+* edit the udev rules file to respond to the desired USB device
+  - determine the 'idVendor', and 'idProduct' values for the USB with `lsusb`
+  - change the fields to the desired values
+* copy udev rule into '/etc/udev/rules.d/' as root
+  - `sudo cp ${HOME}/Code/HeadlessRasPi/etc/rules.d/99-usb-device.rules`
+* restart udev daemon
+  - `sudo systemctl restart udev`
 
 # Usage
 
