@@ -29,7 +29,7 @@ from gpiod.line import Bias, Direction, Edge, Value
 
 PIN_NUMBER = 20
 LOG_LEVEL = "WARNING"
-PROG_PATH = "/home/jdn/Code/HeadlessRasPi/scripts/triggerDisplay.sh"
+PROG_PATH = "/home/jdn/Code/HeadlessRasPi/scripts/gpioTrigger.sh"
 
 
 if __name__ == "__main__":
