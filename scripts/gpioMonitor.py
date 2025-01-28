@@ -4,34 +4,53 @@
 #
 # Script that will trigger the information display when a button is pushed
 #
-################################################################################
-
 # N.B. documentation for gpiod: https://github.com/brgl/libgpiod/tree/master
 #      and https://github.com/brgl/libgpiod/tree/master/bindings/python
-from gpiod.line import Direction, Value
+#
+# LineSettings(
+#    direction: gpiod.line.Direction = <Direction.AS_IS: 1>,
+#    edge_detection: gpiod.line.Edge = <Edge.NONE: 1>,
+#    bias: gpiod.line.Bias = <Bias.AS_IS: 1>,
+#    drive: gpiod.line.Drive = <Drive.PUSH_PULL: 1>,
+#    active_low: bool = False,
+#    debounce_period: datetime.timedelta = datetime.timedelta(0),
+#    event_clock: gpiod.line.Clock = <Clock.MONOTONIC: 1>,
+#    output_value: gpiod.line.Value = <Value.INACTIVE: 0>) -> None
+#
+################################################################################
+
+from datetime import timedelta
+import logging
 import subprocess
 
+import gpiod
+from gpiod.line import Bias, Direction, Edge, Value
+
+
 PIN_NUMBER = 20
+LOG_LEVEL = "DEBUG"  # "WARNING"
+PROG_PATH = "/home/jdn/Code/HeadlessRasPi/scripts/triggerDisplay.py"
 
-chip = gpiod.Chip('/dev/gpiochip0')
 
-lineConfig = {
-    PIN_NUMBER: gpiod.LineSettings(direction=gpiod.line.Direction.INPUT,
-                                   edge_detection=gpio.line.Edge.?,
-                                   bias=gpiod.line.Bias.?,
-                                   drive=Drive.PUSH_PULL,
-                                   active_low=True,
-#                                   debounce_period=?,
-#                                   event_clock=?,
+if __name__ == "__main__":
+    logging.basicConfig(level=LOG_LEVEL)
 
-                                   )
-}
-line = chip.request_lines(lineConfig, lineConfig) 
-line.request(consumer="gpio_monitor", type=gpiod.LINE_REQ_EV_BOTH_EDGES)
+    rqst = gpiod.request_lines(
+        "/dev/gpiochip0",
+        consumer="gpioMonitor",
+        config={PIN_NUMBER: gpiod.LineSettings(
+                direction=Direction.INPUT,
+                bias=Bias.PULL_UP,
+                edge_detection=Edge.FALLING,
+                debounce_period=timedelta(milliseconds=10)
+            )
+        }
+    )
 
-while True:
-    ev_line = line.event_wait(sec=1)
-    if ev_line:
-        event = line.event_read()
-        if event.type == gpiod.LineEvent.FALLING_EDGE:
-            subprocess.run(["/path/to/your/script.sh"])
+    while True:
+        ev_line = request.wait_edge_events()
+        if ev_line == Edge.FALLING:
+            logging.debug("Line {PIN_NUMBER} Falling Edge: calling script")
+            subprocess.run([PROG_PATH])
+    logging.debug("Exiting")
+    request.release()
