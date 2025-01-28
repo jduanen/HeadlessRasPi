@@ -31,7 +31,7 @@ import gpiod
 from gpiod.line import Bias, Direction, Edge, Value
 
 
-LOG_LEVEL = "DEBUG"  # "WARNING"
+LOG_LEVEL = "WARNING"
 PIN_NUMBER = 20
 PROG_PATH = "/home/jdn/Code/HeadlessRasPi/src/infoDisplay.py"
 
