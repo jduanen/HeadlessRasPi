@@ -1,0 +1,26 @@
+--- /usr/lib/python3/dist-packages/NetworkManager.py	2022-07-26 08:38:49.000000000 -0700
++++ NetworkManager.py	2025-01-29 11:32:53.589720816 -0800
+@@ -379,6 +379,7 @@
+         NM_DEVICE_TYPE_GENERIC: Generic,
+         NM_DEVICE_TYPE_INFINIBAND: Infiniband,
+         NM_DEVICE_TYPE_IP_TUNNEL: IPTunnel,
++        NM_DEVICE_TYPE_LOOPBACK: Loopback,
+         NM_DEVICE_TYPE_MACVLAN: Macvlan,
+         NM_DEVICE_TYPE_MODEM: Modem,
+         NM_DEVICE_TYPE_OLPC_MESH: OlpcMesh,
+@@ -409,6 +410,7 @@
+ class Generic(Device): pass
+ class Infiniband(Device): pass
+ class IPTunnel(Device): pass
++class Loopback(Device): pass
+ class Macvlan(Device): pass
+ class Modem(Device): pass
+ class OlpcMesh(Device): pass
+@@ -812,6 +814,7 @@
+ NM_DEVICE_TYPE_TEAM = 15
+ NM_DEVICE_TYPE_TUN = 16
+ NM_DEVICE_TYPE_IP_TUNNEL = 17
++NM_DEVICE_TYPE_LOOPBACK = 32
+ NM_DEVICE_TYPE_MACVLAN = 18
+ NM_DEVICE_TYPE_VXLAN = 19
+ NM_DEVICE_TYPE_VETH = 20
