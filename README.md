@@ -12,9 +12,7 @@ small display attached to the Raspberry Pi's 40-pin connector.
 ![Memory Page](memoryPage.png)
 
 **TODO**
-* Add option for another GPIO pin switch to trigger the display
 * Describe what happens when you mis-provision the WiFi
-* Describe how to configure Comitup
 
 ## Provisioning WiFi
 
@@ -97,20 +95,38 @@ Issue this command to disable the feature causing WiFi problems:
 ### WiFi Provisioning SW Setup
 
 * install Comitup
-  - `sudo apt install comitup`
-    * alternatively, build and install it from the github repo
-      - https://github.com/davesteele/comitup
+  - get the latest build
+      ** get link to latest release at: 'https://davesteele.github.io/comitup/latest/comitup_latest.html'
+        - use this instead of the path below if it's different
+  - install the latest build
+    * `cd ~/Code`
+    * `wget https://davesteele.github.io/comitup/deb/comitup_1.43-1_all.deb`
+    * `sudo dpkg -i --force-all comitup_1.43-1_all.deb`
+  - check that it's been properly installed
+    * `apt list | egrep comitup`  # comitup/now 1.43-1 all [installed,local]
+  - can also try standard install
+    * `sudo apt install comitup`
+  - alternatively, build and install it from the github repo
+    * https://github.com/davesteele/comitup
+
+* get man page
+  - https://davesteele.github.io/comitup/man/comitup-conf.pdf
 
 * patch NetworkManager.py
   - need to patch the python network manager
     * `sudo cp /usr/lib/python3/dist-packages/NetworkManager.py /usr/lib/python3/dist-packages/NetworkManager.py.orig`
-    * `sudo patch < conf/NetworkManager.patch`
+    * `sudo patch /usr/lib/python3/dist-packages/NetworkManager.py NetworkManager.patch`
 
 * configure Comitup
-  - **????**
   - modify the configuration defined in the /etc/comitup.conf file
     * enable flushing the credentials with `enable_nuke: 1`
     * can also set `verbose: <n>` if you want logs in `/var/log/comitup.log` and `/var/log/comitup-web.log`
+    * edit config file to enable flushing of WiFi credentials
+      - `cd /etc`
+      - `sudo cp comitup.conf comitup.conf.orig`
+      - `sudo ex comitup.conf`
+  - test nuke feature by shorting GPIO pins 39 and 40 for three seconds or more
+    * look for green LED to flash three times
 
 * notes
   - the comitup utility writes connection files to /etc/NetworkManager/system-connections/
