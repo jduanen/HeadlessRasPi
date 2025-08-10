@@ -236,6 +236,7 @@ To enable the USB trigger, perform the following operations:
 * Select AP and Set WiFi Credentials
   - on any (desktop or mobile) browser, select the AP whose names starts with "comitup-"
   - doing a sign-in to the AP takes you to the comitup provisioning page
+    * the birdnet app takes over port 80, so you have to connect to port 9090 to get the setup page
   - select the desired AP from the list, enter the passphrase, and click the "Connect" button
   - the raspi is now provisioned and should connect to the desired AP
     * if the wrong passphrase is given, the raspi will fall back and offer the AP named "comitup..." again
