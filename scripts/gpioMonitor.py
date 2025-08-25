@@ -27,7 +27,7 @@ import gpiod
 from gpiod.line import Bias, Direction, Edge, Value
 
 
-PIN_NUMBER = 20
+PIN_NUMBER = 16
 LOG_LEVEL = "WARNING"
 PROG_PATH = "/home/jdn/Code/HeadlessRasPi/scripts/gpioTrigger.sh"
 

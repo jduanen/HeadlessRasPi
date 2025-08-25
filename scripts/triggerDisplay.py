@@ -40,7 +40,7 @@ def runScript():
 if __name__ == "__main__":
     logging.basicConfig(level=LOG_LEVEL)
 
-    button = Button(20, pull_up=True, hold_time=30)
+    button = Button(16, pull_up=True, hold_time=30)
     button.when_held = runScript
     logging.debug("Polling for display button")
     while True:
