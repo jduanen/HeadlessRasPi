@@ -188,7 +188,7 @@ trigger the display.
 
 ### Information Display Trigger Switch
 
-A momentary switch or a jumper can be used to short GPIO20 to ground for 15
+A momentary switch or a jumper can be used to short GPIO16 to ground for 15
 or more seconds to cause the device to trigger the display of information
 pages on the Mini-Display.
 
@@ -198,7 +198,7 @@ that work.
 
 * Connections:
   - `GND`: pin 39 (bottom row, farthest from the edge)
-  - `GPIO20`: pin 38 (next to the bottom row, closest to the edge)
+  - `GPIO16`: pin 36 (third from the bottom row near the RJ45 connector, closest to the edge of the board)
 
 To enable the display trigger switch, perform the following operations:
 * install service description
@@ -253,6 +253,6 @@ To enable the USB trigger, perform the following operations:
   - it should be possible to apply power to the raspi and then see what the machine is doing, what the state of the wifi link is, and what APs the raspi can see
     * the signal strength, channel, frequency, and generation of WiFi are displayed when the raspi is connected to an AP
     * a subset of the WiFi link information is displayed when the raspi is offering the provisioning web page in AP mode
-  - it is also possible to trigger the display of information at any time by shorting GPIO20 (pin 38) to ground for more than 15 seconds
+  - it is also possible to trigger the display of information at any time by shorting GPIO16 (pin 36) to ground for more than 15 seconds
   - the display can also be triggered by forcing a WiFi state transition
     * this can be done by causing a reauth with the AP if the device is currently connected
